@@ -1,7 +1,8 @@
-import React from 'react'
+import {React, useState} from 'react'
 import { Box,makeStyles, Typography ,FormControl,InputBase, Button, TextareaAutosize} from '@material-ui/core'
 import {InsertPhoto} from '@material-ui/icons'
 import CreateImg from '../../images/detail.jpg'
+import { createPost } from '../../service/api'
 
 const useStyles= makeStyles((theme) =>({
     container:{
@@ -37,8 +38,26 @@ const useStyles= makeStyles((theme) =>({
     }
 }))
 
+const initialPost = {
+    title: '',
+    description: '',
+    picture: '',
+    username: 'bhavesh',
+    categories: 'All',
+    createdDate: new Date()
+}
+
 const CreateView = () =>{
     const classes=useStyles();
+
+    const [post, setPost] = useState(initialPost);
+    const handleChange =(e)=>{
+        setPost({ ...post, [e.target.name]: e.target.value})
+    }
+
+    const savePost = async ()=>{
+        await createPost(post);
+    }
     return (
         <Box className={classes.container}>
             <img src={CreateImg} alt="photo" className={classes.image}/>
@@ -46,12 +65,20 @@ const CreateView = () =>{
             <FormControl className={classes.form}>
                 <InsertPhoto color='action' fontSize='large'/>
 
-                <InputBase placeholder='title' className={classes.textfeild}/>
-                <Button variant="contained" color='primary'>Publish</Button>
+                <InputBase onChange={(e) => handleChange(e)} 
+                placeholder='title'
+                className={classes.textfeild}
+                name="title"
+                />
+                <Button onClick={()=> savePost()} variant="contained" color='primary'>Publish</Button>
             </FormControl>
 
             <TextareaAutosize
-                rowsMin={5} placeholder="Write your story/content here.....!" className={classes.textarea}
+                onChange={(e) => handleChange(e)}
+                rowsMin={5} 
+                placeholder="Write your story/content here.....!" 
+                className={classes.textarea}
+                name="description"
             />
         </Box>
     )
