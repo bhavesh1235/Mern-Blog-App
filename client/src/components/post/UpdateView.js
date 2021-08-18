@@ -1,7 +1,9 @@
-import React from 'react'
+import {React,useState,useEffect} from 'react'
 import { Box,makeStyles, Typography ,FormControl,InputBase, Button, TextareaAutosize} from '@material-ui/core'
 import {InsertPhoto} from '@material-ui/icons'
 import CreateImg from '../../images/detail.jpg'
+import { useHistory } from 'react-router'
+import { getPost ,updatePost } from '../../service/api'
 
 const useStyles= makeStyles((theme) =>({
     container:{
@@ -37,8 +39,38 @@ const useStyles= makeStyles((theme) =>({
     }
 }))
 
-const UpdateView = () =>{
+const initialPost = {
+    title: '',
+    description: '',
+    picture: '',
+    username: 'bhavesh',
+    categories: 'All',
+    createdDate: new Date()
+}
+
+const UpdateView = ({match}) =>{
     const classes=useStyles();
+    const history=useHistory();
+    const [post,setPost]=useState(initialPost);
+
+    const handleChange =(e)=>{
+        setPost({ ...post, [e.target.name]: e.target.value})
+    }
+
+    const updateBlog = async ()=>{
+        await updatePost(match.params.id, post);
+        history.push(`/details/${match.params.id}`);
+    }
+
+    useEffect(()=>{
+        const fetchData = async()=>{
+            let data=await getPost(match.params.id);
+            console.log(data);
+            setPost(data);
+        }
+        fetchData();
+    },[])
+
     return (
         <Box className={classes.container}>
             <img src={CreateImg} alt="photo" className={classes.image}/>
@@ -46,12 +78,21 @@ const UpdateView = () =>{
             <FormControl className={classes.form}>
                 <InsertPhoto color='action' fontSize='large'/>
 
-                <InputBase placeholder='title' className={classes.textfeild}/>
-                <Button variant="contained" color='primary'>Update</Button>
+                <InputBase onChange={(e) => handleChange(e)}
+                placeholder='title' 
+                value={post.title} 
+                className={classes.textfeild}
+                name="title"
+                />
+                <Button onClick={()=> updateBlog()} variant="contained" color='primary'>Update</Button>
             </FormControl>
 
-            <TextareaAutosize
-                rowsMin={5} placeholder="Write your story/content here.....!" className={classes.textarea}
+            <TextareaAutosize onChange={(e) => handleChange(e)}
+            minRows={5}  
+            value={post.description} 
+            placeholder="Write your story/content here.....!" 
+            className={classes.textarea}
+            name="description"
             />
         </Box>
     )

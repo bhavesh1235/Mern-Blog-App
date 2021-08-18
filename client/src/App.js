@@ -6,6 +6,7 @@ import Header from './components/Header';
 import Home from './components/home/Home';
 import DetailView from './components/post/DetailView';
 import CreateView from './components/post/CreateView';
+import UpdateView from './components/post/UpdateView';
 import {BrowserRouter, Switch, Route} from 'react-router-dom';
 
 function App() {
@@ -14,18 +15,10 @@ function App() {
       <Header/>
       <Box style={{marginTop:64}}>
         <Switch>
-          <Route exact path='/'>
-            <Home/>
-          </Route>
-          <Route path='/details'>
-            <DetailView/>
-          </Route>
-          <Route path='/create'>
-            <CreateView/>
-          </Route>
-          <Route path='/update'>
-            <CreateView/>
-          </Route>
+          <Route exact path='/' component={Home} />
+          <Route path='/details/:id' component={DetailView} />
+          <Route path='/create' component={CreateView} />
+          <Route path='/update/:id' component={UpdateView} />
         </Switch>
       </Box>
     </BrowserRouter>

@@ -1,8 +1,9 @@
-import React from 'react'
+import {React,  useState , useEffect} from 'react'
 import { Box,makeStyles, Typography } from '@material-ui/core'
 import DetailImg from '../../images/detail.jpg'
 import {Edit , Delete} from '@material-ui/icons'
-import { Link } from 'react-router-dom'
+import { Link , useHistory} from 'react-router-dom'
+import { getPost , deletePost } from '../../service/api'
 
 const useStyles= makeStyles((theme) =>({
     container:{
@@ -24,7 +25,8 @@ const useStyles= makeStyles((theme) =>({
         margin:5,
         border:'1px solid #878787',
         padding: 5,
-        borderRadius:10
+        borderRadius:10,
+        cursor:'pointer'
     },
     heading:{
         fontSize:38,
@@ -39,27 +41,48 @@ const useStyles= makeStyles((theme) =>({
         [theme.breakpoints.down('sm')]:{
             display:'block'
         }
+    },
+    link:{
+        textDecoration:'none',
+        color:'inherit'
     }
 }))
 
-const DetailView = () => {
+const DetailView = ({ match}) => {
     // const url="https://images.unsplash.com/photo-1543128639-4cb7e6eeef1b?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8bGFwdG9wJTIwc2V0dXB8ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80";
     const classes=useStyles();
+    const history=useHistory();
+    const [post,setPost]=useState({});
+
+    const deleteBlog =async ()=>{
+        await deletePost(post._id)
+        history.push('/')
+    }
+
+    useEffect(()=>{
+        const fetchData= async ()=>{
+            let data =await getPost(match.params.id);
+            console.log(data);
+            setPost(data);
+        }
+        fetchData();
+    },[]);
+
     return (
         <Box className={classes.container}>
-            <img src={DetailImg} alt="photo" className={classes.image} />
+            <img src={post.picture || DetailImg} alt="photo" className={classes.image} />
             <Box className={classes.icons}>
-                <Link to='update'><Edit color='primary' className={classes.icon}/></Link>
-                <Delete color='error' className={classes.icon}/>
+                <Link to={`/update/${post._id}`}><Edit color='primary' className={classes.icon}/></Link>
+                <Delete onClick={()=> deleteBlog()} color='error' className={classes.icon}/>
             </Box>
-            <Typography className={classes.heading}>title of the blog</Typography>
-            <Box className={classes.subheading}> 
-                <Typography>Author: <span style={{fontWeight:600}}>Bhavesh Lokre</span></Typography>
-                <Typography style={{marginLeft:'auto'}}>13 Aug 2021</Typography>
+            <Typography className={classes.heading}>{post.title}</Typography>
+            <Box className={classes.subheading}>
+                <Link to={`/?username=${post.username}`} className={classes.link}> 
+                    <Typography>Author: <span style={{fontWeight:600}}>{post.username}</span></Typography>
+                </Link>
+                    <Typography style={{marginLeft:'auto'}}>{new Date(post.createdDate).toDateString()}</Typography>
             </Box>
-            <Typography>Line 42:13:  Redundant alt attribute. Screen-readers already announce `img` tags as an image. You don’t need to use the words `image`, `photo,` or `picture` (or any specified custom words) in the alt prop  jsx-a11y/img-redundant-alt
-src\components\post\DetailView.js
-  Line 40:13:  Redundant alt attribute. Screen-readers already announce `img` tags as an image. You don’t need to use</Typography>
+            <Typography>{post.description}</Typography>
         </Box>
 
     )

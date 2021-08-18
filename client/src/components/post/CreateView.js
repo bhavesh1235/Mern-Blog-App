@@ -3,6 +3,7 @@ import { Box,makeStyles, Typography ,FormControl,InputBase, Button, TextareaAuto
 import {InsertPhoto} from '@material-ui/icons'
 import CreateImg from '../../images/detail.jpg'
 import { createPost } from '../../service/api'
+import {useHistory} from 'react-router-dom'
 
 const useStyles= makeStyles((theme) =>({
     container:{
@@ -49,6 +50,7 @@ const initialPost = {
 
 const CreateView = () =>{
     const classes=useStyles();
+    const history=useHistory();
 
     const [post, setPost] = useState(initialPost);
     const handleChange =(e)=>{
@@ -57,6 +59,7 @@ const CreateView = () =>{
 
     const savePost = async ()=>{
         await createPost(post);
+        history.push('/');
     }
     return (
         <Box className={classes.container}>
@@ -75,7 +78,7 @@ const CreateView = () =>{
 
             <TextareaAutosize
                 onChange={(e) => handleChange(e)}
-                rowsMin={5} 
+                minRows={5} 
                 placeholder="Write your story/content here.....!" 
                 className={classes.textarea}
                 name="description"
