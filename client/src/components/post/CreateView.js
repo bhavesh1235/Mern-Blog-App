@@ -1,8 +1,8 @@
-import {React, useState} from 'react'
+import {React, useState , useEffect} from 'react'
 import { Box,makeStyles, Typography ,FormControl,InputBase, Button, TextareaAutosize} from '@material-ui/core'
 import {InsertPhoto} from '@material-ui/icons'
 import CreateImg from '../../images/detail.jpg'
-import { createPost } from '../../service/api'
+import { createPost , uploadFile} from '../../service/api'
 import {useHistory} from 'react-router-dom'
 
 const useStyles= makeStyles((theme) =>({
@@ -53,6 +53,27 @@ const CreateView = () =>{
     const history=useHistory();
 
     const [post, setPost] = useState(initialPost);
+    const [file,setFile] = useState('');
+    const [imageURL, setImageURL] = useState('');
+
+    const image = post.picture ? post.picture : CreateImg;
+
+    useEffect(()=>{
+        const getImage = async()=>{
+            if(file)
+            {
+                const data= new FormData();
+                data.append("name", file.name);
+                data.append("file" , file);
+
+                const image = await uploadFile(data);
+                post.picture = image.data;
+                setImageURL(image.data); //done for rerendering after image has been uploaded
+            }
+        }
+        getImage();
+    },[file])
+
     const handleChange =(e)=>{
         setPost({ ...post, [e.target.name]: e.target.value})
     }
@@ -63,11 +84,18 @@ const CreateView = () =>{
     }
     return (
         <Box className={classes.container}>
-            <img src={CreateImg} alt="photo" className={classes.image}/>
+            <img src={image} alt="photo" className={classes.image}/>
 
             <FormControl className={classes.form}>
-                <InsertPhoto color='action' fontSize='large'/>
-
+                <label htmlFor="fileInput">
+                    <InsertPhoto color='action' fontSize='large'/>
+                </label>
+                <input 
+                    type="file"
+                    id="fileInput"
+                    style={{display:'none'}}
+                    onChange={(e) =>setFile(e.target.files[0])}
+                />
                 <InputBase onChange={(e) => handleChange(e)} 
                 placeholder='title'
                 className={classes.textfeild}

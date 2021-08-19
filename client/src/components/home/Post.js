@@ -26,7 +26,8 @@ const useStyles=makeStyles({
     },
     heading:{
         fontSize:18,
-        fontWeight:600
+        fontWeight:600,
+        textAlign:'center'
     },
     detail:{
         fontSize:14,
@@ -36,10 +37,13 @@ const useStyles=makeStyles({
 const Post = ({post}) => {
     const classes=useStyles();
     // const url="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=752&q=80"
+
+    const image = post.picture ? post.picture : postImg;
+
     return (
         <>
         <Box className={classes.container}>
-            <img src={postImg} alt="photo" className={classes.image} />
+            <img src={image} alt="photo" className={classes.image} />
             <Typography className={classes.text}>{post.categories}</Typography>
             <Typography className={classes.heading}>{post.title}</Typography>
             <Typography className={classes.text}>Author: {post.username}</Typography>

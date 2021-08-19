@@ -54,6 +54,8 @@ const DetailView = ({ match}) => {
     const history=useHistory();
     const [post,setPost]=useState({});
 
+    const image = post.picture ? post.picture : DetailImg;
+
     const deleteBlog =async ()=>{
         await deletePost(post._id)
         history.push('/')
@@ -70,7 +72,7 @@ const DetailView = ({ match}) => {
 
     return (
         <Box className={classes.container}>
-            <img src={post.picture || DetailImg} alt="photo" className={classes.image} />
+            <img src={image} alt="photo" className={classes.image} />
             <Box className={classes.icons}>
                 <Link to={`/update/${post._id}`}><Edit color='primary' className={classes.icon}/></Link>
                 <Delete onClick={()=> deleteBlog()} color='error' className={classes.icon}/>
